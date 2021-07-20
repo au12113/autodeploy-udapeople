@@ -104,6 +104,7 @@ jobs:
           name: run frontend scaning
           command: |
             cd frontend
+            npm i
             npm audit fix
 
   scan-backend:
