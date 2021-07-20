@@ -104,7 +104,7 @@ jobs:
           name: run frontend scaning
           command: |
             cd frontend
-            npm audit
+            npm audit fix
 
   scan-backend:
     docker:
@@ -114,10 +114,10 @@ jobs:
       - restore_cache:
           keys: [backend-build]
       - run:
-          name: run frontend scaning
+          name: run backend scaning
           command: |
             cd backend
-            npm audit
+            npm audit fix
 
   deploy-infrastructure:
     docker:
