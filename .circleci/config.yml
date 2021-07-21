@@ -129,11 +129,11 @@ jobs:
       - run:
           name: Ensure back-end infrastructure exists
           command: |
-            echo Backend-Udapeople-${CIRCLE_WORKFLOW_ID}
+            pwd
             aws cloudformation deploy \
               --template-file .circleci/deploy-backend.yml \
               --tags project=udapeople \
-              --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID} \
+              --stack-name Backend_Udapeople_${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
       - run:
           name: Ensure front-end infrastructure exist
@@ -141,7 +141,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/deploy-frontend.yml \
               --tags project=udapeople \
-              --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID} \
+              --stack-name Backend_Udapeople_${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID}
       - run:
           name: Add back-end ip to ansible inventory
@@ -303,14 +303,14 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
