@@ -132,7 +132,7 @@ jobs:
             pwd
             cat ./.circleci/files/backend.yml
             aws cloudformation deploy \
-              --template-file file://./.circleci/files/backend.yml \
+              --template-file .circleci/files/backend.yml \
               --stack-name Backend_Udapeople_${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
               --tags project=udapeople
@@ -140,7 +140,7 @@ jobs:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
-              --template-file file://./.circleci/files/frontend.yml \
+              --template-file .circleci/files/frontend.yml \
               --stack-name Backend_Udapeople_${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
               --tags project=udapeople
