@@ -147,8 +147,7 @@ jobs:
           command: |
             echo [web] > .circleci/ansible/inventory.txt
             aws cloudformation list-exports \
-              --query "Export[?Name==\`BackendIP\`].Value" \
-              --no-paginate >> .circleci/ansible/inventory.txt
+              --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
 
       - persist_to_workspace:
