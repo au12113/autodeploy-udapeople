@@ -151,9 +151,9 @@ jobs:
               --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
 
       - persist_to_workspace:
-          root: ansible
+          root: .circleci/ansible
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - inventory.txt
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -165,7 +165,7 @@ jobs:
           fingerprints:
             - '0d:dc:24:dc:32:c9:a7:85:1f:61:3d:22:de:ac:62:8a'
       - attach_workspace:
-          at: /tmp/ansible
+          at: /tmp/.circleci/ansible
       - run:
           name: Install dependencies
           command: |
