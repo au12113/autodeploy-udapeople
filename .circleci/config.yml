@@ -165,6 +165,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            apk add curl
             pip install cloudformation-cli-python-plugin
       - run:
           name: Configure server
@@ -224,6 +225,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
+            apk add curl
             pip install cloudformation-cli-python-plugin
       - run:
           name: Deploy backend
