@@ -149,11 +149,8 @@ jobs:
             echo [web] > .circleci/ansible/inventory.txt
             aws cloudformation list-exports \
               --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
-
-      - persist_to_workspace:
-          root: .circleci/ansible
-          paths:
-            - inventory.txt
+            curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
+              --request PUT --data .circleci/ansible/inventory.txt https://api.memstash.io/values/BackendIP
       # Here's where you will add some code to rollback on failure      
 
   configure-infrastructure:
@@ -164,8 +161,6 @@ jobs:
       - add_ssh_keys: 
           fingerprints:
             - '0d:dc:24:dc:32:c9:a7:85:1f:61:3d:22:de:ac:62:8a'
-      - attach_workspace:
-          at: /tmp/.circleci/ansible
       - run:
           name: Install dependencies
           command: |
@@ -174,9 +169,9 @@ jobs:
       - run:
           name: Configure server
           command: |
-            cat .circleci/ansible/inventory.txt
+            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP > .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-      # Here's where you will add some code to rollback on failure      
+            # Here's where you will add some code to rollback on failure      
 
   run-migrations:
     docker:
@@ -225,8 +220,6 @@ jobs:
       - add_ssh_keys: 
           fingerprints:
             - '0d:dc:24:dc:32:c9:a7:85:1f:61:3d:22:de:ac:62:8a'
-      - attach_workspace:
-          at: /tmp/ansible
       - run:
           name: Install dependencies
           command: |
@@ -235,7 +228,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            # your code here
+            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP
       # Here's where you will add some code to rollback on failure  
 
   smoke-test:
