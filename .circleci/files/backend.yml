@@ -34,12 +34,12 @@ Resources:
         - Key: Name
           Value: !Sub backend-${ID}
 
-Outputs:
-  BackendIP:
-    Value: !GetAtt EC2Instance.PrivateDnsName
-    Export:
-      Name: BackendIP
-  BackendPipelineID:
-    Value: !Ref ID
-    Export:
-      Name: BackendPipelineID
+# Outputs:
+#   BackendIP:
+#     Value: !GetAtt EC2Instance.PrivateDnsName
+#     Export:
+#       Name: BackendIP
+#   BackendPipelineID:
+#     Value: !Ref ID
+#     Export:
+#       Name: BackendPipelineID
