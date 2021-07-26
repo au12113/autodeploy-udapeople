@@ -1,0 +1,17 @@
+- name: "Install required dependencies"
+  become_user: root
+  apt:
+    name:
+      - nodejs 
+      - npm 
+      - git
+      - libcap2-bin
+    update_cache: yes
+
+- name: "Install pm2 dependencies"
+  npm:
+    name:
+      - pm2
+    state: present
+    production: yes
+    global: yes
