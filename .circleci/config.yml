@@ -4,13 +4,17 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      workflow:
+        type: string
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
+            aws cloudformation delete-stack \
+              --stack-name Backend-Udapeople-<<parameter.workflow>>
+            aws cloudformation delete-stack \
+              --stack-name Frontend-Udapeople-<<parameter.workflow>>
             exit 1
 
   revert-migrations:
@@ -151,7 +155,8 @@ jobs:
               --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
               --request PUT --data .circleci/ansible/inventory.txt https://api.memstash.io/values/BackendIP
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   configure-infrastructure:
     docker:
@@ -172,7 +177,8 @@ jobs:
           command: |
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP > .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-            # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   run-migrations:
     docker:
@@ -189,7 +195,8 @@ jobs:
           command: |
             # Your code here
             exit 1
-     # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-frontend:
     docker:
@@ -211,7 +218,8 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
                     
   deploy-backend:
     docker:
@@ -231,7 +239,8 @@ jobs:
           name: Deploy backend
           command: |
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP
-      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   smoke-test:
     docker:
@@ -254,7 +263,8 @@ jobs:
           name: Frontend smoke test.
           command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
     docker:
@@ -269,7 +279,8 @@ jobs:
           name: Update cloudfront distribution
           command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   cleanup:
       docker:
