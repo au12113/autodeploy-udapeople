@@ -11,7 +11,6 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            apk add --no-cache python3 py3-pip
             pip3 install --upgrade pip
             pip3 install awscli
             aws cloudformation delete-stack \
@@ -157,7 +156,7 @@ jobs:
             aws cloudformation list-exports \
               --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
-              --request PUT --data .circleci/ansible/inventory.txt https://api.memstash.io/values/BackendIP
+              --request PUT --data $(cat .circleci/ansible/inventory.txt) https://api.memstash.io/values/BackendIP
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
