@@ -140,6 +140,7 @@ jobs:
               --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
               --tags project=udapeople
+            aws cloudformation describe-stack-events --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID}
       - run:
           name: Ensure front-end infrastructure exist
           command: |
