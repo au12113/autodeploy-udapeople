@@ -11,8 +11,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            pip3 install --upgrade pip
-            pip3 install awscli
+            python --version
+            pip install --upgrade pip
+            pip install awscli
             aws cloudformation delete-stack \
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
