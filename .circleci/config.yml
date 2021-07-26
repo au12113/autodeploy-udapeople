@@ -14,13 +14,10 @@ commands:
             apk add --no-cache python3 py3-pip
             pip3 install --upgrade pip
             pip3 install awscli
-            rm -rf /var/cache/apk/*
-
             aws cloudformation delete-stack \
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
               --stack-name Frontend-Udapeople-<<parameters.workflow>>
-            exit 1
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
