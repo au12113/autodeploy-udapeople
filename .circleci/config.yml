@@ -11,7 +11,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            python --version
+            apk add --update py2-pip
             pip install --upgrade pip
             pip install awscli
             aws cloudformation delete-stack \
@@ -142,7 +142,6 @@ jobs:
               --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
               --tags project=udapeople
-            aws cloudformation describe-stack-events --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID}
       - run:
           name: Ensure front-end infrastructure exist
           command: |
