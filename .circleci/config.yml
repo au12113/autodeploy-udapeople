@@ -214,7 +214,7 @@ jobs:
             if grep "has been executed successfully" backend/migrations_logs.txt
             then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request PUT --data "1" https://api.memstash.io/values/BackendIP
             fi
-      - revert-migrations
+      - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-frontend:
@@ -239,7 +239,7 @@ jobs:
             cd frontend
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
-      - revert-migrations
+      - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-backend:
@@ -262,7 +262,7 @@ jobs:
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
-      - revert-migrations
+      - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
 
   smoke-test:
@@ -289,7 +289,7 @@ jobs:
             curl "http://${BACKNED_IP}:3030/api/status"
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
-      - revert_migratinon
+      - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
@@ -307,7 +307,7 @@ jobs:
             # your code here
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
-      - revert-migrations
+      - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
 
   cleanup:
