@@ -215,6 +215,7 @@ jobs:
             then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request PUT --data "1" https://api.memstash.io/values/BackendIP
             fi
       - revert-migrations
+          workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-frontend:
     docker:
@@ -239,6 +240,7 @@ jobs:
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations
+          workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-backend:
     docker:
@@ -261,6 +263,7 @@ jobs:
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations
+          workflow: $CIRCLE_WORKFLOW_ID
 
   smoke-test:
     docker:
@@ -287,6 +290,7 @@ jobs:
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert_migratinon
+          workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
     docker:
@@ -304,6 +308,7 @@ jobs:
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations
+          workflow: $CIRCLE_WORKFLOW_ID
 
   cleanup:
       docker:
