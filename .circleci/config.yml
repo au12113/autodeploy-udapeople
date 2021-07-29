@@ -30,13 +30,11 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            SUCCESS=1
+            if(( ${SUCCESS}==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd backend
+              npm run migrations:revert
             fi
           when: on_fail
             
@@ -112,8 +110,7 @@ jobs:
           name: run frontend scaning
           command: |
             cd frontend
-            npm i
-            npm audit fix --audit-level=critical --force
+            npm audit --audit-level=critical
 
   scan-backend:
     docker:
@@ -126,7 +123,6 @@ jobs:
           name: run backend scaning
           command: |
             cd backend
-            npm i
             npm audit fix --audit-level=critical --force
 
   deploy-infrastructure:
