@@ -202,6 +202,7 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm install
+            cat .env
             npm run migrations > migrations_log.txt
             cat migrations_log.txt
       - run:
