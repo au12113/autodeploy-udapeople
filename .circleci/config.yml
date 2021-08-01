@@ -14,7 +14,6 @@ commands:
             apk add --update py2-pip
             pip install --upgrade pip
             pip install awscli
-
             aws cloudformation delete-stack \
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
@@ -30,7 +29,8 @@ commands:
           name: Revert migrations
           # Add when this will run
           command: |
-            SUCCESS=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/MigrateResult-<<parameter.workflow>>`
+            SUCCESS=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+              --request GET https://api.memstash.io/values/MigrateResult-<<parameters.workflow>>`
             if(( ${SUCCESS}==1 )); 
             then
               cd backend
@@ -153,10 +153,6 @@ jobs:
             aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Name,Values=udapeople-backend" > test.txt
             cat test.txt
-      #       yum -y install tar gzip
-      #       echo [web] > .circleci/ansible/inventory.txt
-      #       aws cloudformation list-exports \
-      #         --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
               --request PUT --data $(cat test.txt) https://api.memstash.io/values/BACKEND_IP
       - destroy-environment:
@@ -179,7 +175,8 @@ jobs:
       - run:
           name: Configure server
           command: |
-            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP > .circleci/ansible/inventory.txt
+            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+             --request GET https://api.memstash.io/values/BACKEND_IP > .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
@@ -212,7 +209,8 @@ jobs:
           name: Send migration results to memstash
           command: |
             if grep "has been executed successfully" backend/migrations_logs.txt
-            then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request PUT --data "1" https://api.memstash.io/values/MigrateResult-${CIRCLE_WORKFLOW_ID}
+            then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
+              --request PUT --data "1" https://api.memstash.io/values/MigrateResult-${CIRCLE_WORKFLOW_ID}
             fi
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
@@ -260,7 +258,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BackendIP
+            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BACKEND_IP
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
