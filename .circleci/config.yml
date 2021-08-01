@@ -14,6 +14,7 @@ commands:
             apk add --update py2-pip
             pip install --upgrade pip
             pip install awscli
+
             aws cloudformation delete-stack \
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
@@ -29,8 +30,7 @@ commands:
           name: Revert migrations
           # Add when this will run
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=1
+            SUCCESS=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/MigrateResult-<<parameter.workflow>>`
             if(( ${SUCCESS}==1 )); 
             then
               cd backend
@@ -138,7 +138,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --stack-name Backend-Udapeople-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
-              --tags project=udapeople
+              --tags project=udapeople-backend workflow=${CIRCLE_WORKFLOW_ID}
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -146,16 +146,19 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --stack-name Frontend-Udapeople-${CIRCLE_WORKFLOW_ID} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID} \
-              --tags project=udapeople
+              --tags project=udapeople-frontend workflow=${CIRCLE_WORKFLOW_ID}
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            yum -y install tar gzip
-            echo [web] > .circleci/ansible/inventory.txt
-            aws cloudformation list-exports \
-              --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
+            aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=udapeople-backend" > test.txt
+            cat test.txt
+      #       yum -y install tar gzip
+      #       echo [web] > .circleci/ansible/inventory.txt
+      #       aws cloudformation list-exports \
+      #         --query "Exports[?Name=='BackendIP'].Value|[0]" >> .circleci/ansible/inventory.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
-              --request PUT --data $(cat .circleci/ansible/inventory.txt) https://api.memstash.io/values/BackendIP
+              --request PUT --data $(cat test.txt) https://api.memstash.io/values/BACKEND_IP
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
@@ -209,7 +212,7 @@ jobs:
           name: Send migration results to memstash
           command: |
             if grep "has been executed successfully" backend/migrations_logs.txt
-            then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request PUT --data "1" https://api.memstash.io/values/BackendIP
+            then curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request PUT --data "1" https://api.memstash.io/values/MigrateResult-${CIRCLE_WORKFLOW_ID}
             fi
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
@@ -228,6 +231,7 @@ jobs:
           name: Get backend url
           command: |
             # your code here
+
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
