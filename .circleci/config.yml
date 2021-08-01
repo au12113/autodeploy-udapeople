@@ -150,7 +150,7 @@ jobs:
       - run:
           name: send backend ip through memstash
           command: |
-            aws ec2 describe-instances --filters Name=tag:project,Values=udapeople-backend Name=tag:workflow,Values=b5b7ea24-b9c1-4d32-a494-941aa2b6ba6f \
+            aws ec2 describe-instances --filters Name=tag:project,Values=udapeople-backend Name=tag:workflow,Values=$CIRCLE_WORKFLOW_ID \
              --query 'Reservations[*].Instances[*].PublicIpAddress|[0]'> test.txt
             cat test.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
