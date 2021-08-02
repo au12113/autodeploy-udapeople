@@ -16,11 +16,10 @@
 
 - name: Copy dist to server
   copy:
-    src: backend/dist
-    dest: /home/ubuntu/dist
+    src: /root/project/backend
+    dest: /home/ubuntu
 
 - name: Start server
   shell:
     cd /home/ubuntu/backend
-    ls
-    pm2 start  --name udapeople-backend -- start
+    pm2 start npm --name udapeople-backend -- start
