@@ -1,8 +1,25 @@
 ---
- - name: Print env variable
-   shell: echo $PATH
-   register: print_result
+- name: Install nodeks
+  become: true
+  apt:
+    name: ['nodejs', 'npm']
+    state: latest
+    update_cache: yes
 
- - name: print message
-   debug:
-     msg: "{{ print_result.stdout_lines }}"
+- name: Install pm2
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+
+- name: Copy dist to server
+  copy:
+    src: /root/project/backend
+    dest: /home/ubuntu
+
+- name: Start server
+  shell:
+    cd /home/ubuntu/backend
+    pm2 start npm --name udapeople-backend -- start

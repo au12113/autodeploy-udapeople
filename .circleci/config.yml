@@ -210,6 +210,8 @@ jobs:
             fi
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-frontend:
     docker:
@@ -236,9 +238,9 @@ jobs:
             npm install
             npm run build
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
-      - destroy-environment:
-          workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
+          workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
   deploy-backend:
@@ -261,10 +263,14 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" --request GET https://api.memstash.io/values/BACKEND_IP
-      - destroy-environment:
-          workflow: $CIRCLE_WORKFLOW_ID
+            echo '[web]' > .circleci/ansible/inventory.txt
+            curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+             --request GET https://api.memstash.io/values/BACKEND_IP >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
+            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       - revert-migrations:
+          workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
   smoke-test:
@@ -296,9 +302,9 @@ jobs:
             else
             return 0
             fi
-      - destroy-environment:
-          workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
+          workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
@@ -314,9 +320,9 @@ jobs:
           name: Update cloudfront distribution
           command: |
             # your code here
-      - destroy-environment:
-          workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
+          workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
 
   cleanup:
