@@ -163,8 +163,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys: 
-          fingerprints:
-            - '0d:dc:24:dc:32:c9:a7:85:1f:61:3d:22:de:ac:62:8a'
+          fingerprints: ['0d:dc:24:dc:32:c9:a7:85:1f:61:3d:22:de:ac:62:8a']
       - run:
           name: Install dependencies
           command: |
@@ -176,7 +175,6 @@ jobs:
             echo '[web]' > .circleci/ansible/inventory.txt
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
              --request GET https://api.memstash.io/values/BACKEND_IP >> .circleci/ansible/inventory.txt
-            echo '' >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
