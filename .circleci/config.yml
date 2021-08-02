@@ -280,13 +280,10 @@ jobs:
             pip install --upgrade pip
             pip install awscli
       - run:
-          name: Get backend url
+          name: Get backend url and run Backend smoke test.
           command: |
-            export BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
-             --request GET https://api.memstash.io/values/BACKEND_IP`
-      - run:
-          name: Backend smoke test.
-          command: |
+            BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+              --request GET https://api.memstash.io/values/BACKEND_IP`
             echo "curl_target:http://${BACKEND_IP}:3030/api/status"
             curl "http://${BACKEND_IP}:3030/api/status"
       - run:
