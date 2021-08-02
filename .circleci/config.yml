@@ -151,7 +151,7 @@ jobs:
           name: send backend ip through memstash
           command: |
             aws ec2 describe-instances --filters Name=tag:project,Values=udapeople-backend Name=tag:workflow,Values=$CIRCLE_WORKFLOW_ID \
-             --query 'Reservations[*].Instances[*].PublicIpAddress|[0]' --output text > inventory.txt
+             --query 'Reservations[*].Instances[*].PublicDnsName |[0]' --output text > inventory.txt
             curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
               --request PUT --data $(cat inventory.txt) https://api.memstash.io/values/BACKEND_IP
       - destroy-environment:
