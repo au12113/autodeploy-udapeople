@@ -11,9 +11,6 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            apk add --update py2-pip
-            pip install --upgrade pip
-            pip install awscli
             aws cloudformation delete-stack \
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
@@ -27,7 +24,6 @@ commands:
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
           command: |
             SUCCESS=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
               --request GET https://api.memstash.io/values/MigrateResult-<<parameters.workflow>>`
@@ -168,6 +164,9 @@ jobs:
           name: Install dependencies
           command: |
             apk add ansible curl
+            apk add --update py2-pip
+            pip install --upgrade pip
+            pip install awscli
             pip install cloudformation-cli-python-plugin
       - run:
           name: Configure server
@@ -200,7 +199,6 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm install
-            cat .env
             npm run migrations > migrations_log.txt
             cat migrations_log.txt
       - run:
@@ -221,19 +219,23 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            cd frontend
-            npm i
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            sudo apt install -y nodejs
       - run:
           name: Get backend url
           command: |
-            # your code here
-
+            BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+             --request GET https://api.memstash.io/values/BACKEND_IP`
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            echo "${API_URL}" > frontend/.env
       - run:
           name: Deploy frontend objects
           command: |
             cd frontend
+            npm install
+            npm run build
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
@@ -252,6 +254,9 @@ jobs:
           command: |
             apk add --update ansible
             apk add curl
+            apk add --update py2-pip
+            pip install --upgrade pip
+            pip install awscli
             pip install cloudformation-cli-python-plugin
       - run:
           name: Deploy backend
@@ -270,20 +275,30 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add tar gzip curl
+            apk add curl
+            apk add --update py2-pip
+            pip install --upgrade pip
             pip install awscli
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=`cat .circleci/ansible/inventory.txt | head -2 | tail -1`
+            export BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+             --request GET https://api.memstash.io/values/BACKEND_IP`
       - run:
           name: Backend smoke test.
           command: |
-            # your code here
+            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
+            curl "http://${BACKEND_IP}:3030/api/status"
       - run:
           name: Frontend smoke test.
           command: |
-            curl "http://${BACKNED_IP}:3030/api/status"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3.website.us-west-2.amazonaws.com"
+            if curl -s ${URL} | grep "Welcome"
+            then
+            return 1
+            else
+            return 0
+            fi
       - destroy-environment:
           workflow: $CIRCLE_WORKFLOW_ID
       - revert-migrations:
