@@ -14,22 +14,13 @@
     production: yes
     state: present
 
-- name: Check directory
-  shell:
-    echo 'pwd'
-    pwd
-    echo 'ls'
-    ls -al
-    echo 'root'
-    ls -al /
-
 - name: Copy dist to server
   copy:
-    src: /root/project/backend/dist
+    src: backend/dist
     dest: /home/ubuntu/dist
 
 - name: Start server
   shell:
     cd /home/ubuntu/backend
     ls
-    pm2 start npm --name udapeople-backend -- start
+    pm2 start  --name udapeople-backend -- start
