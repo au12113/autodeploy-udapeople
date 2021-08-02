@@ -177,6 +177,7 @@ jobs:
             echo '[web]' > .circleci/ansible/inventory.txt
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
              --request GET https://api.memstash.io/values/BACKEND_IP >> .circleci/ansible/inventory.txt
+            echo '' >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
