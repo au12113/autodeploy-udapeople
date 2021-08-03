@@ -13,6 +13,7 @@
     state: present
 
 - name: Remove node_modules and dist
+  become: true
   shell: /bin/rm -rf /root/project/backend/dist /root/project/backend/node_modules 
 
 - name: Copy backend to server
