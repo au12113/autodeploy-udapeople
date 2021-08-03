@@ -15,6 +15,7 @@ commands:
               --stack-name Backend-Udapeople-<<parameters.workflow>>
             aws cloudformation delete-stack \
               --stack-name Frontend-Udapeople-<<parameters.workflow>>
+            aws s3 rb s3://udapeople-<<parameters.workflow>> --force
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -287,13 +288,6 @@ jobs:
             pip install --upgrade pip
             pip install awscli
       - run:
-          name: Get backend url and run Backend smoke test.
-          command: |
-            BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
-              --request GET https://api.memstash.io/values/BACKEND_IP`
-            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
-            curl "http://${BACKEND_IP}:3030/api/status"
-      - run:
           name: Frontend smoke test.
           command: |
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3.website.us-west-2.amazonaws.com"
@@ -303,6 +297,13 @@ jobs:
             else
             return 0
             fi
+      - run:
+          name: Get backend url and run Backend smoke test.
+          command: |
+            BACKEND_IP=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+              --request GET https://api.memstash.io/values/BACKEND_IP`
+            echo "curl_target:http://${BACKEND_IP}:3030/api/status"
+            curl "http://${BACKEND_IP}:3030/api/status"
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
       - destroy-environment:
