@@ -304,10 +304,10 @@ jobs:
               --request GET https://api.memstash.io/values/BACKEND_IP`
             echo "curl_target:http://${BACKEND_IP}:3030/api/status"
             curl "http://${BACKEND_IP}:3030/api/status"
-      - revert-migrations:
-          workflow: $CIRCLE_WORKFLOW_ID
-      - destroy-environment:
-          workflow: $CIRCLE_WORKFLOW_ID
+      # - revert-migrations:
+      #     workflow: $CIRCLE_WORKFLOW_ID
+      # - destroy-environment:
+      #     workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
     docker:
