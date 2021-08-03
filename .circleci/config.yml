@@ -267,7 +267,8 @@ jobs:
             curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
              --request GET https://api.memstash.io/values/BACKEND_IP >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-            ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
       - destroy-environment:
