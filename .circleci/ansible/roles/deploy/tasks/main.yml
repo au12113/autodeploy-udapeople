@@ -1,10 +1,10 @@
 ---
 - name: Install nodejs
-  become: true
-  apt:
-    name: ['nodejs', 'npm']
-    state: latest
-    update_cache: yes
+  shell: |
+    sudo apt -y update && sudo apt -y upgrade
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
+    sudo apt-get install -y nodejs
+    node -v
 
 - name: Install pm2
   become: true
@@ -14,8 +14,10 @@
     production: yes
     state: present
 
+- name: Remove node_modules and dist
+  shell: /bin/rm -rf /root/project/backend/dist /root/project/backend/node_modules 
+
 - name: Copy backend to server
-  become: true
   copy:
     src: /root/project/backend
     dest: /home/ubuntu
@@ -23,4 +25,5 @@
 - name: Start server
   shell:
     cd /home/ubuntu/backend
-    pm2 start npm --name udapeople-backend -- start
+    npm install
+    pm2 start npm -- start
