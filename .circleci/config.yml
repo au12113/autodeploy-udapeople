@@ -235,7 +235,6 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            cat ~/.aws/config
             cd frontend
             npm install
             npm run build
