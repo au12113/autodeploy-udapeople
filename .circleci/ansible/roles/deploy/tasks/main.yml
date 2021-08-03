@@ -1,9 +1,9 @@
 ---
-- name: Checking dependency version
+- name: Get repository for nodejs
   shell: |
-    pm2 -v
-    node -v
-    
+    curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
+    sudo apt-get install -y nodejs
+
 - name: Install pm2
   npm:
     name: pm2
