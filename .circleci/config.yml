@@ -255,7 +255,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            apk add curl
+            apk add curl openssh-client
             apk add --update py2-pip
             pip install --upgrade pip
             pip install awscli
