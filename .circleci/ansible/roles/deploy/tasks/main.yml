@@ -17,6 +17,7 @@
   shell: /bin/rm -rf /root/project/backend/dist /root/project/backend/node_modules 
 
 - name: Copy backend to server
+  become: true
   copy:
     src: /root/project/backend
     dest: /home/ubuntu
