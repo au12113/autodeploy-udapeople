@@ -1,9 +1,9 @@
 ---
 - name: Install nodejs
   shell: |
-    sudo apt -y update && sudo apt -y upgrade
+    apt -y update && sudo apt -y upgrade
     curl -sL https://deb.nodesource.com/setup_13.x | sudo bash -
-    sudo apt-get install -y nodejs
+    apt-get install -y nodejs
     node -v
 
 - name: Install pm2
