@@ -1,21 +1,13 @@
 ---
-- name: Install the gpg key for nodejs
-  apt_key:
-    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
-    state: present
-
-- name: Install the nodejs 13.x repos
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_setup_13.x"
-    state: present
-    update_cache: yes
+- name: Get repository for nodejs
+  shell: |
+    curl -sL https://deb.nodesource.com/setup_13.x | bash -
 
 - name: Install the nodejs
   apt:
     name: nodejs
 
 - name: Install pm2
-  become: true
   npm:
     name: pm2
     global: yes

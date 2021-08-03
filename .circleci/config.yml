@@ -235,10 +235,11 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
+            cat ~/.aws/config
             cd frontend
             npm install
             npm run build
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
+            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID}/ --recursive
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
       - destroy-environment:

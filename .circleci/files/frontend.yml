@@ -21,11 +21,13 @@ Resources:
     Properties:
       Bucket: !Ref 'WebsiteBucket'
       PolicyDocument:
+        Version: '2012-10-17'
         Statement:
-        - Sid: PublicReadForGetBucketObjects
-          Effect: Allow
+        - Effect: Allow
           Principal: '*'
-          Action: s3:GetObject
+          Action: 
+            - s3:GetObject
+            - s3:PutObject
           Resource: !Join ['', ['arn:aws:s3:::', !Ref 'WebsiteBucket', /*]]
 
 Outputs:
