@@ -22,9 +22,13 @@
     src: /root/project/backend
     dest: /home/ubuntu
 
-- name: Start server
+- name: Install Dependencies
   become: true
-  shell:
+  shell: |
     cd backend
     npm install
+
+- name: Start server
+  shell: |
+    cd backend
     pm2 start --name "udapeople-backend" npm -- start
