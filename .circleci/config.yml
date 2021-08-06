@@ -307,9 +307,9 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID}.s3.website.us-west-2.amazonaws.com"
             if curl -s ${URL} | grep "Welcome"
             then
-            return 1
+              return 1
             else
-            return 0
+              return 0
             fi
       - run:
           name: Get backend url and run Backend smoke test.
@@ -318,10 +318,10 @@ jobs:
               --request GET https://api.memstash.io/values/BACKEND_IP`
             echo "curl_target:http://${BACKEND_IP}:3030/api/status"
             curl "http://${BACKEND_IP}:3030/api/status"
-      # - revert-migrations:
-      #     workflow: $CIRCLE_WORKFLOW_ID
-      # - destroy-environment:
-      #     workflow: $CIRCLE_WORKFLOW_ID
+      - revert-migrations:
+          workflow: $CIRCLE_WORKFLOW_ID
+      - destroy-environment:
+          workflow: $CIRCLE_WORKFLOW_ID
 
   cloudfront-update:
     docker:
@@ -329,9 +329,27 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install dependencies
+          name: Get Previous Workflow
           command: |
-            # your code here
+            OldWorkflow=`aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value|[0]" --region us-west-2`
+            if [[ "${OldWorkflow}" == 'null' ]]; 
+            then 
+              curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
+                --request PUT --data 'null' https://api.memstash.io/values/PreviousWorkflow
+              aws cloudformation deploy  \
+                --template-file .circleci/files/cloudfront.yml \
+                --stack-name Cloudfront-Udapeople \
+                --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID} \
+                --tags project=udapeople-cloudfront
+            else 
+              curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
+                --request PUT --data "${OldWorkflow}" https://api.memstash.io/values/PreviousWorkflow
+              aws cloudformation update-stack  \
+                --template-url .circleci/files/cloudfront.yml \
+                --stack-name Cloudfront-Udapeople \
+                --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID} \
+                --tags Key=project,Value=udapeople-cloudfront
+            fi
       - run:
           name: Update cloudfront distribution
           command: |
@@ -349,15 +367,18 @@ jobs:
         - run:
             name: Get old stack workflow id
             command: |
-              # your code here
-              export OldWorkflowID="the id here"
-              export STACKS=[] #put the list of stacks here
+              export OldWorkflowID=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
+                --request GET https://api.memstash.io/values/PreviousWorkflow`
         - run:
             name: Remove old stacks and files
             command: |
-              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              if [[ "${OldWorkflowID}" != 'null' ]]
               then
-                # your code here
+                aws cloudformation delete-stack \
+                --stack-name Backend-Udapeople-${OldWorkflowID}
+                aws cloudformation delete-stack \
+                  --stack-name Frontend-Udapeople-${OldWorkflowID}
+                aws s3 rb s3://udapeople-${OldWorkflowID} --force
               fi
               
 
@@ -370,13 +391,13 @@ workflows:
       #     requires: [build-frontend]
       # - test-backend:
       #     requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
       - deploy-infrastructure:
-          requires: [scan-frontend, scan-backend]
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [build-frontend, build-backend]
+      #   requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [test-feature-branch]
