@@ -364,13 +364,10 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - run:
-            name: Get old stack workflow id
+            name: Remove old stacks and files
             command: |
               export OldWorkflowID=`curl -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac"\
                 --request GET https://api.memstash.io/values/PreviousWorkflow`
-        - run:
-            name: Remove old stacks and files
-            command: |
               echo "s3://udapeople-${OldWorkflowID}"
               if [[ "${OldWorkflowID}" != 'null' ]]
               then
