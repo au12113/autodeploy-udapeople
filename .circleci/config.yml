@@ -371,6 +371,7 @@ jobs:
         - run:
             name: Remove old stacks and files
             command: |
+              echo "s3://udapeople-${OldWorkflowID}"
               if [[ "${OldWorkflowID}" != 'null' ]]
               then
                 aws cloudformation delete-stack \
