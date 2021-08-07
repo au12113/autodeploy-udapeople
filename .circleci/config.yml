@@ -343,9 +343,9 @@ jobs:
                 --tags project=udapeople-cloudfront
             else 
               curl -H "Content-Type: text/plain" -H "token: 302b3d21-bd30-4e72-8c9c-7b247c85ceac" \
-                --request PUT --data "${OldWorkflow}" https://api.memstash.io/values/PreviousWorkflow
+                --request PUT --data ${OldWorkflow} https://api.memstash.io/values/PreviousWorkflow
               aws cloudformation update-stack  \
-                --template-url .circleci/files/cloudfront.yml \
+                --template-body file://.circleci/files/cloudfront.yml \
                 --stack-name Cloudfront-Udapeople \
                 --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID} \
                 --tags Key=project,Value=udapeople-cloudfront
