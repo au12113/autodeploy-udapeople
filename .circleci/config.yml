@@ -361,9 +361,8 @@ jobs:
 
   cleanup:
       docker:
-        - image: circleci/node:13.8.0
+        - image: amazon/aws-cli
       steps:
-        - checkout
         - run:
             name: Get old stack workflow id
             command: |
@@ -375,7 +374,7 @@ jobs:
               if [[ "${OldWorkflowID}" != 'null' ]]
               then
                 aws cloudformation delete-stack \
-                --stack-name Backend-Udapeople-${OldWorkflowID}
+                  --stack-name Backend-Udapeople-${OldWorkflowID}
                 aws cloudformation delete-stack \
                   --stack-name Frontend-Udapeople-${OldWorkflowID}
                 aws s3 rb s3://udapeople-${OldWorkflowID} --force
