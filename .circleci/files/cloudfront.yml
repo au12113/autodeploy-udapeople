@@ -8,7 +8,6 @@ Parameters:
 
 
 Resources:
-  
   WebpageCDN:
     Type: AWS::CloudFront::Distribution
     Properties:
