@@ -14,7 +14,7 @@ Resources:
       DistributionConfig:
         Origins:
           # Thanks Connor S. for config redirect to http S3 bucket: https://knowledge.udacity.com/questions/464871
-          - DomainName: !Sub "udapeople-${WorkflowID}.s3.amazonaws.com"
+          - DomainName: !Sub "udapeople-${WorkflowID}.s3-website-us-west-2.amazonaws.com"
             Id: webpage
             CustomOriginConfig:
               HTTPPort: 80
