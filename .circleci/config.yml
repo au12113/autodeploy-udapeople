@@ -330,7 +330,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get Previous Workflow
+          name: Get Previous Workflow and Update cloudfront distribution
           command: |
             OldWorkflow=`aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value|[0]" --region us-west-2`
             if [[ "${OldWorkflow}" == 'null' ]]; 
@@ -351,10 +351,6 @@ jobs:
                 --parameters ParameterKey=WorkflowID,ParameterValue=${CIRCLE_WORKFLOW_ID} \
                 --tags Key=project,Value=udapeople-cloudfront
             fi
-      - run:
-          name: Update cloudfront distribution
-          command: |
-            # your code here
       - revert-migrations:
           workflow: $CIRCLE_WORKFLOW_ID
       - destroy-environment:
